@@ -1,56 +1,64 @@
-<!DOCTYPE html> 
-<html> 
-<body> 
+<!DOCTYPE html>
+<html>
+<body>
 
-<button onclick="randomTime()" type="button">Random</button><br> 
-<button onclick="setChannel(0)" type="button">1</button>
-<button onclick="setChannel(1)" type="button">2</button>
-<button onclick="setChannel(2)" type="button">3</button>
-<button onclick="setChannel(3)" type="button">4</button>
-<button onclick="setChannel(4)" type="button">5</button><br> 
+<div id="buttonsdiv">
+<button onclick="audio.pause();" type="button">Stop</button>
+</div>
 
-<audio controls preload="metadata" style=" width:500px;" id="player">
+<audio loop id="player">
 	<source src="satchel_mouth_baby.mp3" type="audio/mpeg">
 	Your browser does not support the audio element.
 </audio><br/>
 
 <script>
 var audio = document.getElementById("player");
-var num_channels = 5
+var num_channels = 4
+
+function makeButtons() {
+	var buttonsdiv = document.getElementById("buttonsdiv");
+	for(idx = 0; idx < num_channels; idx++) {
+		var button_html = "<button onclick=\"setChannel(" + idx.toString() + ")\" type=\"button\">" + idx.toString() + "</button>"
+		buttonsdiv.innerHTML += button_html;
+	}
+}
 
 function getChannelTime(channel) {
 	if (channel > num_channels - 1) {
 		alert("Invalid channel")
 	}
-	
+
 	// After this, Date.now() always gets unix time in ms
 	if (!Date.now) {
 		Date.now = function() { return new Date().getTime(); }
 	}
-	
+
 	duration = audio.duration;
 	channel_time_diff = duration / num_channels
 	base_time = (Date.now() / 1000);
-	
+
 	var times = []
 	for(idx = 0; idx < num_channels; idx++) {
 		offset = duration * (idx / (num_channels))
 		times.push((base_time + offset) % Math.floor(duration))
 	}
-	
-	return times[channel];	
+
+	return times[channel];
 }
 
 function setChannel(c) {
 	audio.currentTime = getChannelTime(c);
+	audio.play()
 }
 
-function randomTime() { 
+function randomTime() {
   duration = audio.duration;
   newtime = Math.random() * duration;
   audio.currentTime=newtime;
-} 
-</script> 
+}
 
-</body> 
+makeButtons();
+</script>
+
+</body>
 </html>
